@@ -1,6 +1,8 @@
 --membuat tipe data enum untuk role users :
 create type users_role as enum ('admin', 'staff', 'customer');
 
+drop database coffee_shop_basic_implementation
+
 --membuat table users :
 create table "users"(
 	"id" serial primary key,
@@ -258,6 +260,235 @@ insert into "users"("full_name", "email", "password", "address", "picture", "pho
 
 
 
+--memasukan data products :
+insert into "products"("name", "description", "base_price", "image", "discount", "is_recommended") values 
+('Espresso', 'Strong and concentrated coffee shot', 25000, 'espresso.jpg', 2000, true),
+('Latte', 'A smooth and creamy coffee with steamed milk', 35000, 'latte.jpg', 3000, true),
+('Cappuccino', 'Equal parts espresso, steamed milk, and frothed milk', 30000, 'cappuccino.jpg', 3000, true),
+('Mocha', 'Espresso with chocolate and steamed milk', 40000, 'mocha.jpg', 5000, true),
+('Cold Brew', 'Cold steeped coffee for a refreshing experience', 30000, 'cold_brew.jpg', 2000, true),
+('Chai Latte', 'Spiced tea with steamed milk', 30000, 'chai_latte.jpg', 3000, null),
+('Hot Chocolate', 'Rich and creamy chocolate drink', 35000, 'hot_chocolate.jpg', 3000, null),
+('Iced Tea', 'Cool and refreshing iced tea', 25000, 'iced_tea.jpg', 2000, null),
+('Fruit Smoothie', 'Blend of fresh fruits for a healthy treat', 45000, 'fruit_smoothie.jpg', 6000, null),
+('Lemonade', 'Classic lemonade with a twist', 20000, 'lemonade.jpg', 2000, null),
+('Croissant', 'Buttery and flaky pastry', 15000, 'croissant.jpg', 1000, null),
+('Avocado Toast', 'Sliced avocado on toasted bread', 25000, 'avocado_toast.jpg', 2000, null),
+('Bagel with Cream Cheese', 'Classic bagel with creamy cheese spread', 18000, 'bagel_cream_cheese.jpg', 3000, null),
+('Vegetarian Wrap', 'Fresh veggies wrapped in a tortilla', 30000, 'vegetarian_wrap.jpg', 2000, null),
+('Chicken Panini', 'Grilled chicken sandwich with melted cheese', 35000, 'chicken_panini.jpg', 3000, null),
+('Extra Shot of Espresso', 'Add an extra kick to your coffee', 5000, 'extra_espresso.jpg', null, null),
+('Vanilla Syrup', 'Sweet vanilla flavor for your drink', 3000, 'vanilla_syrup.jpg', null, true),
+('Whipped Cream', 'Creamy topping for your favorite beverage', 2000, 'whipped_cream.jpg', null, true),
+('Almond Milk', 'Dairy-free alternative for a nutty taste', 4000, 'almond_milk.jpg', null, null),
+('Caramel Drizzle', 'Sweet caramel swirl for a delightful treat', 2500, 'caramel_drizzle.jpg', null, null);
+
+
+
+
+
+
+--memasukan data product_size :
+insert into "product_size"("size", "additional_price") values 
+('small', null),
+('medium', 3000),
+('large', 5000)
+
+
+
+
+
+--memasukan data product_variant :
+insert into "product_variant"("name", "additional_price") values 
+('cold', null),
+('hot', null),
+('spicy', 4000),
+('savory', 3000),
+('extra_sweet', 2000),
+('unsweetened', null)
+
+
+
+
+
+--memasukan data tags :
+insert into "tags"("name") values 
+('flashsale')
+
+
+
+
+
+--update table product_tags, menambahkan not null ke column product_id dan tag_id:
+alter table "product_tags" alter column "product_id" set not null;
+alter table "product_tags" alter column "tag_id" set not null;
+
+
+--memasukan data ke table relasi many to many "product_tag" :
+insert into "product_tags"("tag_id", "product_id") values 
+(1, 1),
+(1, 2),
+(1, 3),
+(1, 4),
+(1, 5)
+
+
+
+
+
+--update table product_tags, menambahkan not null ke column product_id dan user_id:
+alter table "product_ratings" alter column "product_id" set not null;
+alter table "product_ratings" alter column "user_id" set not null;
+
+
+
+--memasukan data "product_ratings" :
+insert into "product_ratings"("product_id", "rate", "review_message", "user_id") values
+(6, 5, 'Delicious chai latte. So comforting!', 7),
+(7, 4, 'Hot chocolate was rich and satisfying.', 12),
+(8, 5, 'Refreshing iced tea. Just what I needed.', 34),
+(9, 4, 'Fruit smoothie was a tasty treat.', 14),
+(10, 5, 'Lemonade had the perfect tanginess.', 48),
+(11, 5, 'Croissant was flaky and delicious.', 19),
+(12, 4, 'Avocado toast was a healthy choice.', 27),
+(13, 5, 'Bagel with cream cheese was perfect.', 5),
+(14, 4, 'Vegetarian wrap was fresh and filling.', 43),
+(15, 5, 'Chicken panini had a great combination of flavors.', 21),
+(16, 5, 'Extra shot of espresso gave a nice kick!', 6),
+(17, 4, 'Vanilla syrup added a sweet touch.', 29),
+(18, 5, 'Whipped cream made the drink extra indulgent.', 15),
+(19, 4, 'Almond milk was a tasty alternative.', 37),
+(20, 5, 'Caramel drizzle was the perfect finishing touch.', 9),
+(1, 5, 'Loved the coffee! Great service too.', 21),
+(5, 4, 'Good coffee, nice atmosphere.', 42),
+(9, 5, 'The fruit smoothie was refreshing and healthy.', 36),
+(13, 4, 'Bagel with cream cheese was a quick and tasty breakfast.', 17),
+(17, 5, 'Vanilla syrup made my drink extra special.', 50),
+(2, 4, 'Nice espresso, will be back for more.', 31),
+(6, 5, 'Chai latte was a perfect pick-me-up.', 2),
+(10, 4, 'Iced tea was a great choice for a hot day.', 47),
+(14, 5, 'Vegetarian wrap was delicious and satisfying.', 13),
+(18, 4, 'Whipped cream on my drink was a delightful surprise.', 24),
+(3, 5, 'Perfectly brewed coffee, just the way I like it.', 46),
+(7, 4, 'Hot chocolate warmed me up on a cold day.', 38),
+(11, 5, 'Croissant was flaky and buttery. Yum!', 23),
+(15, 4, 'Chicken panini had a nice combination of flavors.', 4),
+(19, 5, 'Almond milk is a great alternative for my coffee.', 16),
+(4, 4, 'Nice balance of flavors in the mocha.', 30),
+(8, 5, 'Iced tea was refreshing, just what I needed.', 11),
+(12, 4, 'Avocado toast was a healthy and tasty choice.', 44),
+(16, 5, 'Extra shot of espresso gave my coffee a boost!', 35),
+(20, 4, 'Caramel drizzle added a sweet touch to my drink.', 26),
+(1, 5, 'Great coffee! Really enjoyed the flavor.', 3),
+(2, 4, 'Good quality, nice aroma.', 10),
+(3, 5, 'Perfectly brewed. Loved it!', 25),
+(4, 4, 'Nice balance of flavors.', 18),
+(5, 5, 'Amazing coffee, will come back for more.', 8);
+
+
+
+
+
+--memasukan data categories :
+insert into "categories"("name") values 
+('favorite_product'),
+('coffee'),
+('non_coffee'),
+('foods'),
+('add_on')
+
+
+
+
+
+--memasukan data ke table relasi many to many product category :
+insert into "product_categories"("category_id", "product_id") values 
+(1, 1),
+(1, 2),
+(1, 3),
+(1, 4),
+(1, 5),
+(1, 7),
+(1, 8),
+(1, 17),
+(1, 18),
+(2, 1),
+(2, 2),
+(2, 3),
+(2, 4),
+(2, 5),
+(3, 6),
+(3, 7),
+(3, 8),
+(3, 9),
+(3, 10),
+(4, 11),
+(4, 12),
+(4, 13),
+(4, 14),
+(4, 15),
+(5, 16),
+(5, 17),
+(5, 18),
+(5, 19),
+(5, 20)
+
+
+
+
+
+--update table products, mengubah column is_recommended menjadi false jika bukan rekomendasi :
+update "products" set "is_recommended" = false where id between 6 and 16 or id = 19;
+
+
+
+
+--update table promo, ganti nama column :
+alter table "promo" rename column "minimun_amount" to "minimum_amount";
+
+
+--memasukan data promo :
+insert into "promo"("name", "code", "description", "percentage", "is_expired", "maximum_promo", "minimum_amount") values 
+('Super Deal', 'SD123', 'Special discount for coffee lovers', 0.2, false, 50000, 100000),
+('Morning Bliss', 'MB456', 'Start your day with a 15% off', 0.15, false, 70000, 120000),
+('Coffee Craze', 'CC789', 'Exclusive promo for coffee enthusiasts', 0.1, false, 80000, 150000),
+('Weekend Brew', 'WB101', 'Weekend special: 25% discount on coffee', 0.25, false, 60000, 90000),
+('Caffeine Boost', 'CB202', 'Get a boost with 18% off on your order', 0.18, false, 55000, 95000),
+('Java Delight', 'JD303', 'Delightful promo for Java coffee fans', 0.12, false, 75000, 130000),
+('Espresso Extravaganza', 'EE404', 'Experience an espresso extravaganza with 30% off', 0.3, false, 70000, 110000),
+('Latte Love', 'LL505', 'Show your love for lattes with a 22% discount', 0.22, false, 65000, 100000),
+('Double Shot', 'DS606', 'Double the joy with a 20% discount on your double shot', 0.2, false, 60000, 80000),
+('Mocha Madness', 'MM707', 'Indulge in mocha madness with 28% off', 0.28, false, 55000, 120000);
+
+
+
+
+
+--update table orders, mengubah tipe data column order_number dari int menjadi varchar dan menghapus :
+alter table "orders" alter column "order_number" type varchar(25)
+
+
+
+
+
+--update table order_detail, ubah nama table:
+alter table "order_detail" rename to "order_details"
+
+
+--"chicken-and-egg problem" atau "masalah ayam dan telur" antara column total di table order dan column order_id di order_details :
+-- dimana perlu membuat entitas tertentu sebelum entitas lainnya, tetapi entitas pertama memerlukan informasi dari entitas kedua, dan sebaliknya
+
+--update table orders, menambah not null di total :
+alter table "orders" alter column "total" drop not null;
+
+--memasukan data orders :
+
+
+
+
+
+
+
 select * from "users";
 
 select * from "products";
@@ -280,6 +511,6 @@ select * from "promo"
 
 select * from "orders"
 
-select * from "order_detail"
+select * from "order_details"
 
 select * from "message"
