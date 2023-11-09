@@ -478,12 +478,207 @@ alter table "order_detail" rename to "order_details"
 --"chicken-and-egg problem" atau "masalah ayam dan telur" antara column total di table order dan column order_id di order_details :
 -- dimana perlu membuat entitas tertentu sebelum entitas lainnya, tetapi entitas pertama memerlukan informasi dari entitas kedua, dan sebaliknya
 
---update table orders, menambah not null di total :
+--update table orders, menghapus not null di total dan di delivery address, set default column tax_amount dan status, menambah unique column order_number:
 alter table "orders" alter column "total" drop not null;
+alter table "orders" alter column "delivery_address" drop not null;
+alter table "orders" alter column "tax_amount" set default 1000;
+alter table "orders" alter column "status" set default 'on-progress';
+alter table "orders" add constraint unique_order_number unique ("order_number")
+
+
+
+
+
+--update table product_size, set nilai 0 untuk additional_price null :
+update "product_size" set "additional_price" = 0 where id = 1;
+
+
+
+
+
+--update table product_varian, set nilai 0 untuk additional_price null :
+update "product_variant" set "additional_price" = 0 where id in (1, 2, 6);
+
+
+
+
+
+--update table products, set nilai 0 untuk discount null :
+update "products" set "discount" = 0 where id between 16 and 20;
+
+
+
+
+
+
+--orders berisi 5 baris data tapi di proses satu satu dengan transaction:
+start transaction 
 
 --memasukan data orders :
+insert into "orders"("user_id", "order_number") values 
+(30, '#80459-80459');
 
 
+
+
+
+--memasukan delivery_address = bisa dimasukan custom atau sesuai dengan address dari user :
+	--jika custom address :
+	update "orders" set "delivery_address" = '123 Elm St, Nearby' where id = 1
+	
+	--jika menggunakan address user :
+	update "orders" set "delivery_address" = (
+		select "u"."address"
+		from "orders" "o"
+		join "users" "u" on ("u"."id" = "o"."user_id")
+		where "o"."id" = 8
+	)
+	where id = 8
+	
+
+
+
+
+--memasukan full_name = bisa dimasukan custom atau sesuai dengan full_name dari user :
+	--jika custom address :
+	update "orders" set "full_name" = 'lily lewis' where id = 1
+	
+	--jika menggunakan full_name user :
+	update "orders" set "full_name" = (
+		select "u"."full_name"
+		from "orders" "o"
+		join "users" "u" on ("u"."id" = "o"."user_id")
+		where "o"."id" = 8
+	)
+	where id = 8
+		
+
+
+
+
+--memasukan email = bisa dimasukan custom atau sesuai dengan email dari user :
+	--jika custom email :
+	update "orders" set "email" = 'email@example.com' where id = 1
+	
+	--jika menggunakan email user :
+	update "orders" set "email" = (
+		select "u"."email"
+		from "orders" "o"
+		join "users" "u" on ("u"."id" = "o"."user_id")
+		where "o"."id" = 8
+	)
+	where id = 8
+
+
+
+
+
+--memasukan data order_details :
+insert into "order_details"("product_id", "product_size_id", "product_variant_id", "quantity", "order_id") values
+(2, 3, 2, 2, 8)
+
+
+
+--hitung total orders :
+update "orders" set "total" = (
+	select 	(("p"."base_price" - "p"."discount") * "od"."quantity") + "ps"."additional_price" + "pv"."additional_price" + "o"."tax_amount"
+			from "order_details" 	"od"
+			join "products" 		"p" 	on ("p"."id"  = "od"."product_id")
+			join "product_size" 	"ps" 	on ("ps"."id" = "od"."product_size_id")
+			join "product_variant"	"pv"	on ("pv"."id" = "od". "product_variant_id")
+			join "orders"			"o"		on ("o". "id" = "od". "order_id")
+	where "od"."order_id" = 8
+)
+where id = 8;
+			
+
+
+
+
+--jika apakai pakai promo :
+update "orders" set "promo_id" = 7
+where id = 7;
+
+
+
+
+
+
+--hitung total di kurangi potongan harga, jika pakai promo:
+update "orders" set "total" = (
+	select "o"."total" - ("o"."total" * "p"."percentage")
+	from "orders" "o"
+	join "promo"  "p" on ("p"."id" = "o"."promo_id")
+	where "o"."id" = 8
+)
+where id = 8
+
+
+commit
+
+
+
+
+
+--memasukan data "mesage" :
+insert into "message"("recipient_id", "sender_id", "text") values 
+(2, 7, 'Hello, I would like to order a coffee.'),
+(3, 10, 'What is the special coffee of the day?'),
+(4, 15, 'I enjoy black coffee, do you have anything new?'),
+(5, 22, 'Is there a special promotion for loyal customers?'),
+(6, 30, 'I would like to make a reservation for two at 6:00 PM.'),
+(2, 12, 'Thank you for the friendly service yesterday.'),
+(3, 18, 'Is there a special menu for vegetarians?'),
+(4, 25, 'How can I become a loyalty member?'),
+(5, 32, 'What is the price for an espresso?'),
+(6, 40, 'Can I order a chocolate cake to take away?'),
+(2, 14, 'When do you open and close on Sundays?'),
+(3, 20, 'I want to give positive feedback for the excellent service.'),
+(4, 28, 'Is there a discount for large orders?'),
+(5, 35, 'Can I order a hot coffee without sugar?'),
+(6, 44, 'Thank you so much! I really love your coffee.');
+
+
+
+
+
+--inner join = menampilkan data promo dan orders yang berelasi:
+select "p"."name" as promo, "o"."id" as "order_id"
+from "orders" "o"
+join "promo" "p" on ("p"."id" = "o"."promo_id")
+
+
+--left join = menampilkan semua data orders walaupun tidak berelasi dengan promo :
+select "p"."name" as promo, "o"."id" as "order_id"
+from "orders" "o"
+left join "promo" "p" on ("p"."id" = "o"."promo_id")
+
+
+--left join = menampilkan semua data promo walaupun tidak berelasi dengan orders :
+select "p"."name" as promo, "o"."id" as "order_id"
+from "orders" "o"
+right join "promo" "p" on ("p"."id" = "o"."promo_id")
+
+
+--full outer join = menampilkan semua data dari table promo dan orders yang berelasi maupun yang tidak berelasi :
+select "p"."name" as promo, "o"."id" as "order_id"
+from "orders" "o"
+full outer join "promo" "p" on ("p"."id" = "o"."promo_id")
+
+
+
+
+
+--aggregate function = menampilkan banyak produk, harga tertinggi, harga terendah dan rata-rata dari tiap category produk:
+select "c"."name" as "category",
+		count("p"."id") as "total products",
+		min("p"."base_price") as "lowest price",
+		max("p"."base_price") as "highest price",
+		round(avg("p"."base_price"), 0) as "average price"
+		from "categories" "c"
+		join "product_categories" "pc" on ("pc"."category_id" = "c"."id")
+		join "products" "p" on ("p"."id" = "pc"."product_id")
+		group by "c"."name"
 
 
 
