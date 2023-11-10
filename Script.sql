@@ -20,7 +20,6 @@ create table "users"(
 
 
 
-
 --membuat table products :
 create table "products"(
 	"id" serial primary key,
@@ -512,109 +511,110 @@ update "products" set "discount" = 0 where id between 16 and 20;
 
 
 --orders berisi 5 baris data tapi di proses satu satu dengan transaction:
-start transaction 
 
+--start transaction 
+--
 --memasukan data orders :
-insert into "orders"("user_id", "order_number") values 
-(30, '#80459-80459');
-
-
-
-
-
+--insert into "orders"("user_id", "order_number") values 
+--(30, '#80459-80459');
+--
+--
+--
+--
+--
 --memasukan delivery_address = bisa dimasukan custom atau sesuai dengan address dari user :
-	--jika custom address :
-	update "orders" set "delivery_address" = '123 Elm St, Nearby' where id = 1
-	
-	--jika menggunakan address user :
-	update "orders" set "delivery_address" = (
-		select "u"."address"
-		from "orders" "o"
-		join "users" "u" on ("u"."id" = "o"."user_id")
-		where "o"."id" = 8
-	)
-	where id = 8
-	
-
-
-
-
+--	jika custom address :
+--	update "orders" set "delivery_address" = '123 Elm St, Nearby' where id = 1
+--	
+--	jika menggunakan address user :
+--	update "orders" set "delivery_address" = (
+--		select "u"."address"
+--		from "orders" "o"
+--		join "users" "u" on ("u"."id" = "o"."user_id")
+--		where "o"."id" = 8
+--	)
+--	where id = 8
+--	
+--
+--
+--
+--
 --memasukan full_name = bisa dimasukan custom atau sesuai dengan full_name dari user :
-	--jika custom address :
-	update "orders" set "full_name" = 'lily lewis' where id = 1
-	
-	--jika menggunakan full_name user :
-	update "orders" set "full_name" = (
-		select "u"."full_name"
-		from "orders" "o"
-		join "users" "u" on ("u"."id" = "o"."user_id")
-		where "o"."id" = 8
-	)
-	where id = 8
-		
-
-
-
-
+--	jika custom address :
+--	update "orders" set "full_name" = 'lily lewis' where id = 1
+--	
+--	jika menggunakan full_name user :
+--	update "orders" set "full_name" = (
+--		select "u"."full_name"
+--		from "orders" "o"
+--		join "users" "u" on ("u"."id" = "o"."user_id")
+--		where "o"."id" = 8
+--	)
+--	where id = 8
+--		
+--
+--
+--
+--
 --memasukan email = bisa dimasukan custom atau sesuai dengan email dari user :
-	--jika custom email :
-	update "orders" set "email" = 'email@example.com' where id = 1
-	
-	--jika menggunakan email user :
-	update "orders" set "email" = (
-		select "u"."email"
-		from "orders" "o"
-		join "users" "u" on ("u"."id" = "o"."user_id")
-		where "o"."id" = 8
-	)
-	where id = 8
-
-
-
-
-
+--	jika custom email :
+--	update "orders" set "email" = 'email@example.com' where id = 1
+--	
+--	jika menggunakan email user :
+--	update "orders" set "email" = (
+--		select "u"."email"
+--		from "orders" "o"
+--		join "users" "u" on ("u"."id" = "o"."user_id")
+--		where "o"."id" = 8
+--	)
+--	where id = 8
+--
+--
+--
+--
+--
 --memasukan data order_details :
-insert into "order_details"("product_id", "product_size_id", "product_variant_id", "quantity", "order_id") values
-(2, 3, 2, 2, 8)
-
-
-
+--insert into "order_details"("product_id", "product_size_id", "product_variant_id", "quantity", "order_id") values
+--(2, 3, 2, 2, 8)
+--
+--
+--
 --hitung total orders :
-update "orders" set "total" = (
-	select 	(("p"."base_price" - "p"."discount") * "od"."quantity") + "ps"."additional_price" + "pv"."additional_price" + "o"."tax_amount"
-			from "order_details" 	"od"
-			join "products" 		"p" 	on ("p"."id"  = "od"."product_id")
-			join "product_size" 	"ps" 	on ("ps"."id" = "od"."product_size_id")
-			join "product_variant"	"pv"	on ("pv"."id" = "od". "product_variant_id")
-			join "orders"			"o"		on ("o". "id" = "od". "order_id")
-	where "od"."order_id" = 8
-)
-where id = 8;
-			
-
-
-
-
+--update "orders" set "total" = (
+--	select 	(("p"."base_price" - "p"."discount") * "od"."quantity") + "ps"."additional_price" + "pv"."additional_price" + "o"."tax_amount"
+--			from "order_details" 	"od"
+--			join "products" 		"p" 	on ("p"."id"  = "od"."product_id")
+--			join "product_size" 	"ps" 	on ("ps"."id" = "od"."product_size_id")
+--			join "product_variant"	"pv"	on ("pv"."id" = "od". "product_variant_id")
+--			join "orders"			"o"		on ("o". "id" = "od". "order_id")
+--	where "od"."order_id" = 8
+--)
+--where id = 8;
+--			
+--
+--
+--
+--
 --jika apakai pakai promo :
-update "orders" set "promo_id" = 7
-where id = 7;
-
-
-
-
-
-
+--update "orders" set "promo_id" = 7
+--where id = 7;
+--
+--
+--
+--
+--
+--
 --hitung total di kurangi potongan harga, jika pakai promo:
-update "orders" set "total" = (
-	select "o"."total" - ("o"."total" * "p"."percentage")
-	from "orders" "o"
-	join "promo"  "p" on ("p"."id" = "o"."promo_id")
-	where "o"."id" = 8
-)
-where id = 8
-
-
-commit
+--update "orders" set "total" = (
+--	select "o"."total" - ("o"."total" * "p"."percentage")
+--	from "orders" "o"
+--	join "promo"  "p" on ("p"."id" = "o"."promo_id")
+--	where "o"."id" = 8
+--)
+--where id = 8
+--
+--
+--commit
 
 
 
@@ -679,6 +679,152 @@ select "c"."name" as "category",
 		join "product_categories" "pc" on ("pc"."category_id" = "c"."id")
 		join "products" "p" on ("p"."id" = "pc"."product_id")
 		group by "c"."name"
+		
+		
+		
+		
+		
+--revisi-3 :
+
+--menambah column "price_cut" di table "orders" :
+alter table "orders" add column "price_cut" numeric (12, 2);
+
+
+
+
+
+
+--tambah column "subtotal" di table "order_details" :
+alter table "order_details" add column "subtotal" numeric(12, 2);
+
+
+
+
+
+--tambah column "final_total" di table "orders" :
+alter table "orders" add column "final_total" numeric(12, 2);
+
+
+
+
+
+--tugas :
+--customer 1 =  1 order 1 barang
+--customer 2 =  3 order 1 barang tiap order
+--customer 3 =  5 order 5 barang tiap order
+		
+
+
+
+--satu order satu transaction :
+
+start transaction
+
+--memasukan data orders :
+insert into "orders"("user_id", "order_number", "promo_id", "delivery_address", "full_name", "email") values 
+--(35, '#91590-31590', 9, (select "address" from "users" where "id" = 19), (select "full_name" from "users" where "id" = 19), (select "email" from "users" where "id" = 19))
+--(26, '#75801-75801', 10, (select "address" from "users" where "id" = 26), (select "full_name" from "users" where "id" = 26), (select "email" from "users" where "id" = 26)),
+--(26, '#65801-65801', 1, (select "address" from "users" where "id" = 26), (select "full_name" from "users" where "id" = 26), (select "email" from "users" where "id" = 26)),
+--(26, '#55801-45801', 4, (select "address" from "users" where "id" = 26), (select "full_name" from "users" where "id" = 26), (select "email" from "users" where "id" = 26))
+--(36, '#92642-92642', 2, (select "address" from "users" where "id" = 36), (select "full_name" from "users" where "id" = 36), (select "email" from "users" where "id" = 36))
+--(36, '#82642-82642', 3, (select "address" from "users" where "id" = 36), (select "full_name" from "users" where "id" = 36), (select "email" from "users" where "id" = 36))
+--(36, '#72642-72642', 6, (select "address" from "users" where "id" = 36), (select "full_name" from "users" where "id" = 36), (select "email" from "users" where "id" = 36))
+--(36, '#62642-62642', 7, (select "address" from "users" where "id" = 36), (select "full_name" from "users" where "id" = 36), (select "email" from "users" where "id" = 36))
+(36, '#52642-52642', 8, (select "address" from "users" where "id" = 36), (select "full_name" from "users" where "id" = 36), (select "email" from "users" where "id" = 36))
+
+
+
+
+
+--memasukan data order_details :
+insert into "order_details"( "order_id", "product_id", "product_variant_id", "product_size_id", "quantity") values
+--(13, 7, 5, 3, 2)
+--(19, 6, 5, 3, 2),
+--(20, 7, 5, 3, 2),
+--(21, 8, 5, 3, 2)
+--(23, 1, 5, 3, 2),
+--(23, 2, 5, 3, 2),
+--(23, 3, 5, 3, 2),
+--(23, 4, 5, 3, 2),
+--(23, 5, 5, 3, 2)
+--(24, 11, 4, 2, 2),
+--(24, 12, 4, 2, 2),
+--(24, 13, 4, 2, 2),
+--(24, 14, 4, 2, 2),
+--(24, 15, 4, 2, 2)
+--(25, 6, 5, 2, 2),
+--(25, 7, 5, 2, 2),
+--(25, 8, 5, 2, 2),
+--(25, 9, 5, 2, 2),
+--(25, 10, 5, 2, 2)
+--(26, 1, 1, 2, 2),
+--(26, 16, 1, 2, 2),
+--(26, 2, 1, 2, 2),
+--(26, 18, 1, 2, 2),
+--(26, 17, 1, 2, 2)
+(28, 1, 5, 3, 2),
+(28, 6, 5, 3, 2),
+(28, 2, 5, 3, 2),
+(28, 8, 5, 3, 2),
+(28, 5, 5, 3, 2)
+
+
+
+
+--menghitung data subtotal :
+update "order_details" set "subtotal" = (
+	select (("p"."base_price" - "p"."discount") * "od"."quantity") + "ps"."additional_price" + "pv"."additional_price"
+	from "order_details" "od"
+	join "products" "p" on ("p"."id" = "od"."product_id")
+	join "product_size" "ps" on ("ps"."id" = "od"."product_size_id")
+	join "product_variant" "pv" on ("pv"."id" = "od"."product_variant_id")
+	where "od"."id" = 50
+)
+where "id" = 50
+
+
+
+
+--menghitung total :
+update "orders" set "total" = (select sum("subtotal") from "order_details" where "order_id" = 28) + (select "tax_amount" from "orders" where "id" = 28)
+where "id" = 28
+
+
+
+
+
+--menghitung price_cut, jika pakai pakai promo:
+update "orders" set "price_cut" = (
+	select "o"."total" * "pro"."percentage"
+	from "orders" "o"
+	join "promo" "pro" on ("pro"."id" = "o"."promo_id")
+	where "o"."id" = 28
+)
+where "id" = 28
+
+
+
+
+--menghitung final_total :
+update "orders" set "final_total" = (select "total" from "orders" where "id" = 28) - (select "price_cut" from "orders" where "id" = 28)
+where "id" = 28
+
+
+rollback
+
+commit
+
+
+
+
+
+--aggregation function :
+select "u"."id" as "user_id", 
+		count("o"."id") as "total order"
+		from "orders" "o"
+		join "users" "u" on ("u"."id" = "o"."user_id")
+		group by "u"."id"
+		having "u"."id" in (35, 26, 36)
 
 
 
@@ -704,8 +850,8 @@ select * from "product_categories"
 
 select * from "promo"
 
-select * from "orders"
+select * from "orders" order by "id"
 
-select * from "order_details"
+select * from "order_details" order by "id"
 
 select * from "message"
