@@ -855,3 +855,204 @@ select * from "orders" order by "id"
 select * from "order_details" order by "id"
 
 select * from "message"
+
+
+
+
+
+--revisi-4 :
+
+--create table :
+create table "example"(
+	"id" serial primary key,
+	"created_at" timestamp default now(),
+	"updated_at" timestamp
+);
+
+
+
+
+--alter table :
+alter table "example" rename to "example_table";
+
+
+
+
+
+--drop table :
+drop table "example_table";
+
+
+
+
+
+--insert :
+insert into "products"("name", "base_price", "image", "discount", "is_recommended") values 
+('black coffee', 15000, 'black_coffee.jpg', 2000, true),
+('white coffee', 15000, 'white_coffee.jpg', 1000, true);
+
+insert into "categories"("name") values ('others')
+
+
+
+
+
+--alter table :
+alter table "products" add column "availibility" varchar(50);
+
+alter table "products" rename column "availibility" to "availibility_product";
+
+alter table "products" drop column "availibility_product";
+
+
+
+
+
+--update record :
+update "products" set "availibility_product" = 'made to order' where "id" = 23;
+
+
+
+
+
+--query :
+select * from "products" where "name" = 'Espresso';
+
+select * from "products" where "name" like 'Espresso';
+
+select * from "products" where "name" ilike 'espresso';
+
+select
+	"p"."name" as "product",
+	"p"."base_price",
+	"c"."name" as "category"
+from "products" "p"
+join "product_categories" "pc" on ("pc"."product_id" = "p"."id")
+join "categories" "c" on ("c"."id" = "pc"."category_id")
+where "p"."base_price" < 40000 and "c"."name" = 'coffee';
+
+select "name", "description", "base_price" from "products"
+where "name" ilike '%black%';
+
+select "name", "description", "base_price" from "products"
+where "name" ilike 'c%';
+
+select "name", "description", "base_price" from "products"
+where "name" ilike '%o';
+
+select "name", "description", "base_price" from "products"
+where "name" ilike '__t%';
+
+select "name", "description", "base_price" from "products"
+where "description" is null;
+
+select "name", "description", "base_price" from "products"
+where "description" is not null;
+
+select "name", "description", "base_price" from "products"
+where "base_price" between 1000 and 5000;
+
+select
+	"p"."name" as "product",
+	"p"."base_price",
+	"c"."name" as "category"
+from "products" "p"
+join "product_categories" "pc" on ("pc"."product_id" = "p"."id")
+join "categories" "c" on ("c"."id" = "pc"."category_id")
+where "c"."name" in ('coffee', 'add_on');
+
+select
+	"p"."name" as "product",
+	"p"."base_price",
+	"c"."name" as "category"
+from "products" "p"
+join "product_categories" "pc" on ("pc"."product_id" = "p"."id")
+join "categories" "c" on ("c"."id" = "pc"."category_id")
+where "c"."name" not in ('coffee', 'favorite_product');
+
+select "name", "description", "base_price" from "products"
+where "base_price" <= 50000 order by "base_price" asc limit 5 offset 0;
+
+select "name", "description", "base_price" from "products"
+where "base_price" <= 50000 order by "base_price" desc limit 5 offset 5;
+
+
+select distinct "c"."name" as "category"
+from "products" "p"
+join "product_categories" "pc" on ("pc"."product_id" = "p"."id")
+join "categories" "c" on ("c"."id" = "pc"."category_id");
+
+select "name", "base_price"/1000 as "price_in_k" from "products";
+
+select lower("name"), length("name"), upper("description") from "products";
+
+select id, extract(year from created_at) as "year", extract(month from created_at) as "month" from "products" limit 5;
+
+select "name",
+	case
+		when "description" is null then 'tidak ada deskripsi'
+		else "description"
+	end as "description_product"
+from "products";
+
+select "name", "base_price",
+	case
+		when "base_price" <= 20000 then 'Cheap'
+		when "base_price" <= 30000 then 'Standar'
+		else 'Expensive'
+	end as "price_category"
+from "products";
+
+select "c"."name" as "category", count("p"."id"), max("p"."base_price"), min("p"."base_price")
+from "products" "p"
+join "product_categories" "pc" on ("pc"."product_id" = "p"."id")
+join "categories" "c" on ("c"."id" = "pc"."category_id")
+group by "c"."name";
+
+--union = jika data full_name ada di kedua table maka hanya akan di tampilkan satu kali
+select "full_name" from "users" union select "full_name" from "orders";
+--union all = jika data full_name ada di kedua table maka akan di tampilkan dua kali atau sebanyak yang ada
+select "full_name" from "users" union all select "full_name" from "orders";
+--intersect = hanya menampilkan data yang ada di kedua table
+select "full_name" from "users" intersect select "full_name" from "orders";
+--except = tidak menampilkan data yang berada di kedua table atau tidak menampilkan hasil intersect
+select "full_name" from "users" except select "full_name" from "orders";
+
+
+
+
+
+--delete record :
+delete from "products" where "id" = 23;
+
+
+
+
+
+--inner join = hanya menampilkan data yang berelasi :
+select "p"."name", "c"."name" as "category"
+from "products" "p"
+join "product_categories" "pc" on ("pc"."product_id" = "p"."id")
+join "categories" "c" on ("c"."id" = "pc"."category_id")
+
+--left join = menampilkan semua data dari table kiri walaupun tidak berelasi :
+select "p"."name", "c"."name" as "category"
+from "products" "p"
+left join "product_categories" "pc" on ("pc"."product_id" = "p"."id")
+left join "categories" "c" on ("c"."id" = "pc"."category_id")
+
+--right join = menampilkan semua data dari table kanan walaupun tidak berelasi :
+select "p"."name", "c"."name" as "category"
+from "products" "p"
+right join "product_categories" "pc" on ("pc"."product_id" = "p"."id")
+right join "categories" "c" on ("c"."id" = "pc"."category_id")
+
+--full outer join = menampilkan semua data dari kedua table yang berelasi maupun yang tidak berelasi :
+select "p"."name", "c"."name" as "category"
+from "products" "p"
+full outer join "product_categories" "pc" on ("pc"."product_id" = "p"."id")
+full outer join "categories" "c" on ("c"."id" = "pc"."category_id")
+
+
+
+
