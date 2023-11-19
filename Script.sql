@@ -462,7 +462,6 @@ insert into "promo"("name", "code", "description", "percentage", "is_expired", "
 
 
 
-
 --update table orders, mengubah tipe data column order_number dari int menjadi varchar dan menghapus :
 alter table "orders" alter column "order_number" type varchar(25)
 
@@ -1055,4 +1054,37 @@ full outer join "categories" "c" on ("c"."id" = "pc"."category_id")
 
 
 
+--revisi - 5
+alter table "products" add constraint "unique_name" unique("name")
 
+alter table "products" alter column "base_price" set not null
+
+alter table "product_variant" add constraint "unique_product_variant" unique("name")
+
+alter table "tags" add constraint "unique_product_tag" unique("name")
+
+alter table "categories" add constraint "unique_categories" unique("name")
+
+alter table "promo" add constraint "unique_name_promo" unique("name")
+
+alter table "promo" add constraint "unique_code_promo" unique("code")
+
+alter table "orders" alter column "delivery_address" set not null
+
+alter table "product_categories" alter column "product_id" set not null
+
+alter table "product_categories" alter column "category_id" set not null
+
+alter table "product_size" add constraint "unique_size_name" unique("size")
+
+alter table "product_size" alter column "additional_price" set default 0
+
+alter table "product_variant" alter column "additional_price" set default 0
+
+alter table "product_variant" add constraint "unique_variant_name" unique("name")
+
+alter table "product_variant" rename to "variant"
+
+alter table "promo" alter column "is_expired" set default false
+
+alter table "products" alter column "discount" set default 0
